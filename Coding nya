@@ -1,0 +1,163 @@
+CREATE VIEW vw_JumlahReservasiPerTamu AS
+SELECT 
+    t.NamaTamu,
+    COUNT(r.ReservasiID) AS JumlahReservasi
+FROM Tamu t
+LEFT JOIN Reservasi r ON t.TamuID = r.TamuID
+GROUP BY t.NamaTamu;
+
+CREATE VIEW vw_TotalPendapatanHotel AS
+SELECT 
+    SUM(TotalBayar) AS TotalPendapatan
+FROM Pembayaran
+WHERE StatusPembayaran = 'Lunas';
+
+CREATE VIEW vw_JumlahKamarPerTipe AS
+SELECT 
+    tk.NamaTipe,
+    COUNT(k.KamarID) AS JumlahKamar
+FROM TipeKamar tk
+JOIN Kamar k ON tk.TipeKamarID = k.TipeKamarID
+GROUP BY tk.NamaTipe;
+
+CREATE VIEW vw_TotalLayananPerReservasi AS
+SELECT
+    r.ReservasiID,
+    SUM(dl.Jumlah * l.HargaLayanan) AS TotalBiayaLayanan
+FROM Reservasi r
+JOIN DetailLayanan dl ON r.ReservasiID = dl.ReservasiID
+JOIN Layanan l ON dl.LayananID = l.LayananID
+GROUP BY r.ReservasiID;
+
+CREATE VIEW vw_JumlahReservasiPerPegawai AS
+SELECT
+    p.NamaPegawai,
+    COUNT(r.ReservasiID) AS JumlahReservasi
+FROM Pegawai p
+LEFT JOIN Reservasi r ON p.PegawaiID = r.PegawaiID
+GROUP BY p.NamaPegawai;
+
+CREATE VIEW vw_ReservasiLengkap AS
+SELECT
+    r.ReservasiID,
+    t.NamaTamu,
+    p.NamaPegawai,
+    r.TanggalCheckIn,
+    r.TanggalCheckOut,
+    r.StatusReservasi
+FROM Reservasi r
+JOIN Tamu t ON r.TamuID = t.TamuID
+JOIN Pegawai p ON r.PegawaiID = p.PegawaiID;
+
+CREATE VIEW vw_DetailKamarReservasi AS
+SELECT
+    r.ReservasiID,
+    k.NomorKamar,
+    tk.NamaTipe,
+    tk.HargaPerMalam
+FROM DetailReservasi dr
+JOIN Reservasi r ON dr.ReservasiID = r.ReservasiID
+JOIN Kamar k ON dr.KamarID = k.KamarID
+JOIN TipeKamar tk ON k.TipeKamarID = tk.TipeKamarID;
+
+CREATE VIEW vw_DataPembayaran AS
+SELECT
+    pb.PembayaranID,
+    t.NamaTamu,
+    pb.TanggalBayar,
+    pb.TotalBayar,
+    mp.NamaMetode
+FROM Pembayaran pb
+JOIN Reservasi r ON pb.ReservasiID = r.ReservasiID
+JOIN Tamu t ON r.TamuID = t.TamuID
+JOIN MetodePembayaran mp ON pb.MetodeID = mp.MetodeID;
+
+CREATE VIEW vw_LayananReservasi AS
+SELECT
+    r.ReservasiID,
+    l.NamaLayanan,
+    dl.Jumlah
+FROM DetailLayanan dl
+JOIN Reservasi r ON dl.ReservasiID = r.ReservasiID
+JOIN Layanan l ON dl.LayananID = l.LayananID;
+
+CREATE VIEW vw_StatusKamar AS
+SELECT
+    k.NomorKamar,
+    k.StatusKamar,
+    tk.NamaTipe
+FROM Kamar k
+JOIN TipeKamar tk ON k.TipeKamarID = tk.TipeKamarID;
+
+CREATE VIEW vw_TamuAktif AS
+SELECT DISTINCT t.NamaTamu
+FROM Tamu t
+JOIN Reservasi r ON t.TamuID = r.TamuID
+WHERE r.StatusReservasi = 'Aktif';
+
+CREATE VIEW vw_ReservasiSelesai AS
+SELECT *
+FROM Reservasi
+WHERE StatusReservasi = 'Selesai';
+
+CREATE VIEW vw_KamarTersedia AS
+SELECT *
+FROM Kamar
+WHERE StatusKamar = 'Tersedia';
+
+CREATE VIEW vw_MetodePembayaran AS
+SELECT *
+FROM MetodePembayaran;
+
+CREATE VIEW vw_PegawaiHotel AS
+SELECT NamaPegawai, Jabatan
+FROM Pegawai;
+
+CREATE PROCEDURE sp_TambahTamu
+    @NamaTamu VARCHAR(100),
+    @Alamat TEXT,
+    @NoTelepon VARCHAR(20),
+    @Email VARCHAR(100)
+AS
+BEGIN
+    INSERT INTO Tamu VALUES (@NamaTamu, @Alamat, @NoTelepon, @Email);
+END;
+
+CREATE PROCEDURE sp_TambahReservasi
+    @CheckIn DATE,
+    @CheckOut DATE,
+    @Status VARCHAR(20),
+    @TamuID INT,
+    @PegawaiID INT
+AS
+BEGIN
+    INSERT INTO Reservasi 
+    VALUES (@CheckIn, @CheckOut, @Status, @TamuID, @PegawaiID);
+END;
+
+CREATE PROCEDURE sp_LihatReservasi
+AS
+BEGIN
+    SELECT * FROM vw_ReservasiLengkap;
+END;
+
+CREATE TRIGGER trg_UpdateStatusKamar
+ON DetailReservasi
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Kamar
+    SET StatusKamar = 'Terisi'
+    WHERE KamarID IN (SELECT KamarID FROM inserted);
+END;
+
+CREATE TRIGGER trg_ValidasiTotalBayar
+ON Pembayaran
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Pembayaran
+    SET StatusPembayaran = 'Lunas'
+    WHERE TotalBayar > 0;
+END;
+
