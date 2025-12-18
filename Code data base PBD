@@ -7,14 +7,11 @@ GO
 USE HotelReservasi;
 GO
 
--- ada tabel Tamu, TipeKamar, Kamar, Pegawai, Reservasi,
--- DetailReservasi, MetodePembayaran, Pembayaran, Layanan, DetailLayanan
-
 ------------------------------------------------------------
 -- TABLE TAMU
 ------------------------------------------------------------
 CREATE TABLE Tamu (
-    TamuID INT PRIMARY KEY IDENTITY(1,1),
+    TamuID INT IDENTITY(1,1) PRIMARY KEY,
     NamaTamu VARCHAR(100),
     Alamat TEXT,
     NoTelepon VARCHAR(20),
@@ -25,7 +22,7 @@ CREATE TABLE Tamu (
 -- TABLE TIPE KAMAR
 ------------------------------------------------------------
 CREATE TABLE TipeKamar (
-    TipeKamarID INT PRIMARY KEY IDENTITY(1,1),
+    TipeKamarID INT IDENTITY(1,1) PRIMARY KEY,
     NamaTipe VARCHAR(50),
     HargaPerMalam INT,
     Kapasitas INT
@@ -35,18 +32,19 @@ CREATE TABLE TipeKamar (
 -- TABLE KAMAR
 ------------------------------------------------------------
 CREATE TABLE Kamar (
-    KamarID INT PRIMARY KEY IDENTITY(1,1),
+    KamarID INT IDENTITY(1,1) PRIMARY KEY,
     NomorKamar VARCHAR(10),
     StatusKamar VARCHAR(20),
     TipeKamarID INT,
-    FOREIGN KEY (TipeKamarID) REFERENCES TipeKamar(TipeKamarID)
+    FOREIGN KEY (TipeKamarID)
+        REFERENCES TipeKamar(TipeKamarID)
 );
 
 ------------------------------------------------------------
 -- TABLE PEGAWAI
 ------------------------------------------------------------
 CREATE TABLE Pegawai (
-    PegawaiID INT PRIMARY KEY IDENTITY(1,1),
+    PegawaiID INT IDENTITY(1,1) PRIMARY KEY,
     NamaPegawai VARCHAR(100),
     Jabatan VARCHAR(50),
     NoTelepon VARCHAR(20)
@@ -56,32 +54,36 @@ CREATE TABLE Pegawai (
 -- TABLE RESERVASI
 ------------------------------------------------------------
 CREATE TABLE Reservasi (
-    ReservasiID INT PRIMARY KEY IDENTITY(1,1),
+    ReservasiID INT IDENTITY(1,1) PRIMARY KEY,
     TanggalCheckIn DATE,
     TanggalCheckOut DATE,
     StatusReservasi VARCHAR(20),
     TamuID INT,
     PegawaiID INT,
-    FOREIGN KEY (TamuID) REFERENCES Tamu(TamuID),
-    FOREIGN KEY (PegawaiID) REFERENCES Pegawai(PegawaiID)
+    FOREIGN KEY (TamuID)
+        REFERENCES Tamu(TamuID),
+    FOREIGN KEY (PegawaiID)
+        REFERENCES Pegawai(PegawaiID)
 );
 
 ------------------------------------------------------------
 -- TABLE DETAIL RESERVASI
 ------------------------------------------------------------
 CREATE TABLE DetailReservasi (
-    DetailReservasiID INT PRIMARY KEY IDENTITY(1,1),
+    DetailReservasiID INT IDENTITY(1,1) PRIMARY KEY,
     ReservasiID INT,
     KamarID INT,
-    FOREIGN KEY (ReservasiID) REFERENCES Reservasi(ReservasiID),
-    FOREIGN KEY (KamarID) REFERENCES Kamar(KamarID)
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (KamarID)
+        REFERENCES Kamar(KamarID)
 );
 
 ------------------------------------------------------------
 -- TABLE METODE PEMBAYARAN
 ------------------------------------------------------------
 CREATE TABLE MetodePembayaran (
-    MetodeID INT PRIMARY KEY IDENTITY(1,1),
+    MetodeID INT IDENTITY(1,1) PRIMARY KEY,
     NamaMetode VARCHAR(50)
 );
 
@@ -89,21 +91,23 @@ CREATE TABLE MetodePembayaran (
 -- TABLE PEMBAYARAN
 ------------------------------------------------------------
 CREATE TABLE Pembayaran (
-    PembayaranID INT PRIMARY KEY IDENTITY(1,1),
+    PembayaranID INT IDENTITY(1,1) PRIMARY KEY,
     TanggalBayar DATE,
     TotalBayar INT,
     StatusPembayaran VARCHAR(20),
     ReservasiID INT,
     MetodeID INT,
-    FOREIGN KEY (ReservasiID) REFERENCES Reservasi(ReservasiID),
-    FOREIGN KEY (MetodeID) REFERENCES MetodePembayaran(MetodeID)
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (MetodeID)
+        REFERENCES MetodePembayaran(MetodeID)
 );
 
 ------------------------------------------------------------
 -- TABLE LAYANAN
 ------------------------------------------------------------
 CREATE TABLE Layanan (
-    LayananID INT PRIMARY KEY IDENTITY(1,1),
+    LayananID INT IDENTITY(1,1) PRIMARY KEY,
     NamaLayanan VARCHAR(100),
     HargaLayanan INT
 );
@@ -112,26 +116,28 @@ CREATE TABLE Layanan (
 -- TABLE DETAIL LAYANAN
 ------------------------------------------------------------
 CREATE TABLE DetailLayanan (
-    DetailLayananID INT PRIMARY KEY IDENTITY(1,1),
+    DetailLayananID INT IDENTITY(1,1) PRIMARY KEY,
     ReservasiID INT,
     LayananID INT,
     Jumlah INT,
-    FOREIGN KEY (ReservasiID) REFERENCES Reservasi(ReservasiID),
-    FOREIGN KEY (LayananID) REFERENCES Layanan(LayananID)
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (LayananID)
+        REFERENCES Layanan(LayananID)
 );
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA TAMU
+-- INSERT DATA TAMU
 ------------------------------------------------------------
 INSERT INTO Tamu (NamaTamu, Alamat, NoTelepon, Email) VALUES
 ('Ahmad Fauzi', 'Bandung', '081234567801', 'ahmad@mail.com'),
 ('Deni Firmansyah', 'Jakarta', '081234567802', 'deni@mail.com'),
 ('Dedi Pratama', 'Bekasi', '081234567803', 'dedi@mail.com'),
 ('Vica Septiana', 'Bogor', '081234567804', 'vica@mail.com'),
-('Nugraha Putra', 'Depok', '081234567805', 'Nugraha@mail.com');
+('Nugraha Putra', 'Depok', '081234567805', 'nugraha@mail.com');
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA TIPE KAMAR
+-- INSERT DATA TIPE KAMAR
 ------------------------------------------------------------
 INSERT INTO TipeKamar (NamaTipe, HargaPerMalam, Kapasitas) VALUES
 ('Standard', 300000, 2),
@@ -139,7 +145,7 @@ INSERT INTO TipeKamar (NamaTipe, HargaPerMalam, Kapasitas) VALUES
 ('Suite', 700000, 4);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA KAMAR
+-- INSERT DATA KAMAR
 ------------------------------------------------------------
 INSERT INTO Kamar (NomorKamar, StatusKamar, TipeKamarID) VALUES
 ('101', 'Tersedia', 1),
@@ -149,15 +155,15 @@ INSERT INTO Kamar (NomorKamar, StatusKamar, TipeKamarID) VALUES
 ('301', 'Tersedia', 3);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA PEGAWAI
+-- INSERT DATA PEGAWAI
 ------------------------------------------------------------
 INSERT INTO Pegawai (NamaPegawai, Jabatan, NoTelepon) VALUES
 ('Bayu Adji', 'Resepsionis', '0821111111'),
 ('Halim Suryana', 'Admin', '0822222222'),
-('Fauzan Muahamad', 'Kasir', '0823333333');
+('Fauzan Muhammad', 'Kasir', '0823333333');
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA RESERVASI
+-- INSERT DATA RESERVASI
 ------------------------------------------------------------
 INSERT INTO Reservasi (TanggalCheckIn, TanggalCheckOut, StatusReservasi, TamuID, PegawaiID) VALUES
 ('2025-01-10', '2025-01-12', 'Aktif', 1, 1),
@@ -165,7 +171,7 @@ INSERT INTO Reservasi (TanggalCheckIn, TanggalCheckOut, StatusReservasi, TamuID,
 ('2025-01-12', '2025-01-14', 'Selesai', 3, 1);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA DETAIL RESERVASI
+-- INSERT DATA DETAIL RESERVASI
 ------------------------------------------------------------
 INSERT INTO DetailReservasi (ReservasiID, KamarID) VALUES
 (1, 1),
@@ -173,7 +179,7 @@ INSERT INTO DetailReservasi (ReservasiID, KamarID) VALUES
 (3, 5);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA METODE PEMBAYARAN
+-- INSERT DATA METODE PEMBAYARAN
 ------------------------------------------------------------
 INSERT INTO MetodePembayaran (NamaMetode) VALUES
 ('Cash'),
@@ -181,7 +187,7 @@ INSERT INTO MetodePembayaran (NamaMetode) VALUES
 ('QRIS');
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA PEMBAYARAN
+-- INSERT DATA PEMBAYARAN
 ------------------------------------------------------------
 INSERT INTO Pembayaran (TanggalBayar, TotalBayar, StatusPembayaran, ReservasiID, MetodeID) VALUES
 ('2025-01-10', 600000, 'Lunas', 1, 1),
@@ -189,7 +195,7 @@ INSERT INTO Pembayaran (TanggalBayar, TotalBayar, StatusPembayaran, ReservasiID,
 ('2025-01-12', 1400000, 'Lunas', 3, 3);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA LAYANAN
+-- INSERT DATA LAYANAN
 ------------------------------------------------------------
 INSERT INTO Layanan (NamaLayanan, HargaLayanan) VALUES
 ('Laundry', 50000),
@@ -197,7 +203,7 @@ INSERT INTO Layanan (NamaLayanan, HargaLayanan) VALUES
 ('Spa', 150000);
 
 ------------------------------------------------------------
--- INSERT SAMPLE DATA DETAIL LAYANAN
+-- INSERT DATA DETAIL LAYANAN
 ------------------------------------------------------------
 INSERT INTO DetailLayanan (ReservasiID, LayananID, Jumlah) VALUES
 (1, 1, 2),
