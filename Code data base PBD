@@ -125,10 +125,10 @@ CREATE TABLE DetailLayanan (
 ------------------------------------------------------------
 INSERT INTO Tamu (NamaTamu, Alamat, NoTelepon, Email) VALUES
 ('Ahmad Fauzi', 'Bandung', '081234567801', 'ahmad@mail.com'),
-('Rina Putri', 'Jakarta', '081234567802', 'rina@mail.com'),
+('Deni Firmansyah', 'Jakarta', '081234567802', 'deni@mail.com'),
 ('Dedi Pratama', 'Bekasi', '081234567803', 'dedi@mail.com'),
-('Siti Aminah', 'Bogor', '081234567804', 'siti@mail.com'),
-('Bayu Saputra', 'Depok', '081234567805', 'bayu@mail.com');
+('Vica Septiana', 'Bogor', '081234567804', 'vica@mail.com'),
+('Nugraha Putra', 'Depok', '081234567805', 'Nugraha@mail.com');
 
 ------------------------------------------------------------
 -- INSERT SAMPLE DATA TIPE KAMAR
@@ -152,9 +152,9 @@ INSERT INTO Kamar (NomorKamar, StatusKamar, TipeKamarID) VALUES
 -- INSERT SAMPLE DATA PEGAWAI
 ------------------------------------------------------------
 INSERT INTO Pegawai (NamaPegawai, Jabatan, NoTelepon) VALUES
-('Andi Wijaya', 'Resepsionis', '0821111111'),
-('Budi Santoso', 'Admin', '0822222222'),
-('Citra Lestari', 'Kasir', '0823333333');
+('Bayu Adji', 'Resepsionis', '0821111111'),
+('Halim Suryana', 'Admin', '0822222222'),
+('Fauzan Muahamad', 'Kasir', '0823333333');
 
 ------------------------------------------------------------
 -- INSERT SAMPLE DATA RESERVASI
