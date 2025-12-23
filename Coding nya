@@ -1,163 +1,198 @@
-CREATE VIEW vw_JumlahReservasiPerTamu AS
-SELECT 
-    t.NamaTamu,
-    COUNT(r.ReservasiID) AS JumlahReservasi
-FROM Tamu t
-LEFT JOIN Reservasi r ON t.TamuID = r.TamuID
-GROUP BY t.NamaTamu;
+/* ============================================================
+   =============== VIEW AGREGASI (5 VIEW) ======================
+   ============================================================ */
 
-CREATE VIEW vw_TotalPendapatanHotel AS
-SELECT 
-    SUM(TotalBayar) AS TotalPendapatan
-FROM Pembayaran
-WHERE StatusPembayaran = 'Lunas';
+-- 1. Menghitung total tamu yang terdaftar
+CREATE VIEW View_TotalTamu AS
+SELECT COUNT(*) AS TotalTamu
+FROM Tamu;
+GO
 
-CREATE VIEW vw_JumlahKamarPerTipe AS
-SELECT 
-    tk.NamaTipe,
-    COUNT(k.KamarID) AS JumlahKamar
-FROM TipeKamar tk
-JOIN Kamar k ON tk.TipeKamarID = k.TipeKamarID
-GROUP BY tk.NamaTipe;
+-- 2. Menghitung jumlah seluruh reservasi
+CREATE VIEW View_TotalReservasi AS
+SELECT COUNT(*) AS TotalReservasi
+FROM Reservasi;
+GO
 
-CREATE VIEW vw_TotalLayananPerReservasi AS
-SELECT
-    r.ReservasiID,
-    SUM(dl.Jumlah * l.HargaLayanan) AS TotalBiayaLayanan
+-- 3. Menghitung total pemasukan dari tabel pembayaran
+CREATE VIEW View_TotalPemasukan AS
+SELECT SUM(TotalBayar) AS TotalPemasukan
+FROM Pembayaran;
+GO
+
+-- 4. Mengambil rata-rata harga kamar
+CREATE VIEW View_RataHargaKamar AS
+SELECT AVG(HargaPerMalam) AS RataRataHarga
+FROM TipeKamar;
+GO
+
+-- 5. Menghitung total penggunaan layanan
+CREATE VIEW View_TotalLayananDigunakan AS
+SELECT SUM(Jumlah) AS TotalLayanan
+FROM DetailLayanan;
+GO
+
+
+/* ============================================================
+   ====================== VIEW JOIN (5 VIEW) ===================
+   ============================================================ */
+
+-- 6. Menggabungkan Reservasi + Tamu (informasi pemesan)
+CREATE VIEW View_ReservasiTamu AS
+SELECT r.ReservasiID, t.NamaTamu, r.TanggalCheckIn, r.TanggalCheckOut, r.StatusReservasi
 FROM Reservasi r
-JOIN DetailLayanan dl ON r.ReservasiID = dl.ReservasiID
-JOIN Layanan l ON dl.LayananID = l.LayananID
-GROUP BY r.ReservasiID;
+JOIN Tamu t ON r.TamuID = t.TamuID;
+GO
 
-CREATE VIEW vw_JumlahReservasiPerPegawai AS
-SELECT
-    p.NamaPegawai,
-    COUNT(r.ReservasiID) AS JumlahReservasi
-FROM Pegawai p
-LEFT JOIN Reservasi r ON p.PegawaiID = r.PegawaiID
-GROUP BY p.NamaPegawai;
-
-CREATE VIEW vw_ReservasiLengkap AS
-SELECT
-    r.ReservasiID,
-    t.NamaTamu,
-    p.NamaPegawai,
-    r.TanggalCheckIn,
-    r.TanggalCheckOut,
-    r.StatusReservasi
-FROM Reservasi r
-JOIN Tamu t ON r.TamuID = t.TamuID
-JOIN Pegawai p ON r.PegawaiID = p.PegawaiID;
-
-CREATE VIEW vw_DetailKamarReservasi AS
-SELECT
-    r.ReservasiID,
-    k.NomorKamar,
-    tk.NamaTipe,
-    tk.HargaPerMalam
+-- 7. Menggabungkan Reservasi + Kamar (kamar yang digunakan)
+CREATE VIEW View_ReservasiKamar AS
+SELECT r.ReservasiID, k.NomorKamar, k.StatusKamar
 FROM DetailReservasi dr
 JOIN Reservasi r ON dr.ReservasiID = r.ReservasiID
-JOIN Kamar k ON dr.KamarID = k.KamarID
-JOIN TipeKamar tk ON k.TipeKamarID = tk.TipeKamarID;
+JOIN Kamar k ON dr.KamarID = k.KamarID;
+GO
 
-CREATE VIEW vw_DataPembayaran AS
-SELECT
-    pb.PembayaranID,
-    t.NamaTamu,
-    pb.TanggalBayar,
-    pb.TotalBayar,
-    mp.NamaMetode
-FROM Pembayaran pb
-JOIN Reservasi r ON pb.ReservasiID = r.ReservasiID
-JOIN Tamu t ON r.TamuID = t.TamuID
-JOIN MetodePembayaran mp ON pb.MetodeID = mp.MetodeID;
+-- 8. Menggabungkan Pembayaran + Metode Pembayaran
+CREATE VIEW View_PembayaranDetail AS
+SELECT p.PembayaranID, p.TotalBayar, p.StatusPembayaran, m.NamaMetode
+FROM Pembayaran p
+JOIN MetodePembayaran m ON p.MetodeID = m.MetodeID;
+GO
 
-CREATE VIEW vw_LayananReservasi AS
-SELECT
-    r.ReservasiID,
-    l.NamaLayanan,
-    dl.Jumlah
+-- 9. Menggabungkan Detail Layanan + Layanan
+CREATE VIEW View_LayananReservasi AS
+SELECT dl.DetailLayananID, r.ReservasiID, l.NamaLayanan, dl.Jumlah
 FROM DetailLayanan dl
 JOIN Reservasi r ON dl.ReservasiID = r.ReservasiID
 JOIN Layanan l ON dl.LayananID = l.LayananID;
+GO
 
-CREATE VIEW vw_StatusKamar AS
-SELECT
-    k.NomorKamar,
-    k.StatusKamar,
-    tk.NamaTipe
-FROM Kamar k
-JOIN TipeKamar tk ON k.TipeKamarID = tk.TipeKamarID;
+-- 10. Menggabungkan Reservasi + Pegawai yang menangani
+CREATE VIEW View_PegawaiReservasi AS
+SELECT r.ReservasiID, p.NamaPegawai, p.Jabatan
+FROM Reservasi r
+JOIN Pegawai p ON r.PegawaiID = p.PegawaiID;
+GO
 
-CREATE VIEW vw_TamuAktif AS
-SELECT DISTINCT t.NamaTamu
-FROM Tamu t
-JOIN Reservasi r ON t.TamuID = r.TamuID
-WHERE r.StatusReservasi = 'Aktif';
 
-CREATE VIEW vw_ReservasiSelesai AS
-SELECT *
-FROM Reservasi
-WHERE StatusReservasi = 'Selesai';
+/* ============================================================
+   ===================== VIEW BEBAS (5 VIEW) ==================
+   ============================================================ */
 
-CREATE VIEW vw_KamarTersedia AS
+-- 11. Menampilkan semua kamar yang tersedia
+CREATE VIEW View_KamarTersedia AS
 SELECT *
 FROM Kamar
 WHERE StatusKamar = 'Tersedia';
+GO
 
-CREATE VIEW vw_MetodePembayaran AS
+-- 12. Menampilkan semua reservasi yang statusnya masih aktif
+CREATE VIEW View_ReservasiAktif AS
 SELECT *
-FROM MetodePembayaran;
+FROM Reservasi
+WHERE StatusReservasi = 'Aktif';
+GO
 
-CREATE VIEW vw_PegawaiHotel AS
-SELECT NamaPegawai, Jabatan
-FROM Pegawai;
+-- 13. Menampilkan layanan yang harganya lebih dari 100.000
+CREATE VIEW View_LayananPremium AS
+SELECT *
+FROM Layanan
+WHERE HargaLayanan > 100000;
+GO
 
+-- 14. Tamu yang berasal dari Bandung
+CREATE VIEW View_TamuBandung AS
+SELECT *
+FROM Tamu
+WHERE Alamat = 'Bandung';
+GO
+
+-- 15. Pegawai dengan jabatan kasir
+CREATE VIEW View_PegawaiKasir AS
+SELECT *
+FROM Pegawai
+WHERE Jabatan = 'Kasir';
+GO
+
+
+
+/* ============================================================
+   ===================== STORED PROCEDURE ======================
+   ============================================================ */
+
+-- 1. Procedure menambah tamu baru ke tabel TAMU
 CREATE PROCEDURE sp_TambahTamu
-    @NamaTamu VARCHAR(100),
+    @Nama VARCHAR(100),
     @Alamat TEXT,
-    @NoTelepon VARCHAR(20),
+    @Telepon VARCHAR(20),
     @Email VARCHAR(100)
 AS
 BEGIN
-    INSERT INTO Tamu VALUES (@NamaTamu, @Alamat, @NoTelepon, @Email);
+	-- proses insert data tamu baru
+    INSERT INTO Tamu (NamaTamu, Alamat, NoTelepon, Email)
+    VALUES (@Nama, @Alamat, @Telepon, @Email);
 END;
+GO
 
-CREATE PROCEDURE sp_TambahReservasi
-    @CheckIn DATE,
-    @CheckOut DATE,
-    @Status VARCHAR(20),
-    @TamuID INT,
-    @PegawaiID INT
+
+-- 2. Procedure untuk update status kamar (Tersedia / Terisi / Maintenance)
+CREATE PROCEDURE sp_UpdateStatusKamar
+    @KamarID INT,
+    @StatusBaru VARCHAR(20)
 AS
 BEGIN
-    INSERT INTO Reservasi 
-    VALUES (@CheckIn, @CheckOut, @Status, @TamuID, @PegawaiID);
+	-- update status kamar berdasarkan ID
+    UPDATE Kamar
+    SET StatusKamar = @StatusBaru
+    WHERE KamarID = @KamarID;
 END;
+GO
 
-CREATE PROCEDURE sp_LihatReservasi
+
+-- 3. Procedure mencari reservasi berdasarkan nama tamu
+CREATE PROCEDURE sp_CariReservasiByNama
+    @Nama VARCHAR(100)
 AS
 BEGIN
-    SELECT * FROM vw_ReservasiLengkap;
+	-- pencarian menggunakan LIKE agar fleksibel
+    SELECT r.ReservasiID, r.TanggalCheckIn, r.TanggalCheckOut, r.StatusReservasi
+    FROM Reservasi r
+    JOIN Tamu t ON r.TamuID = t.TamuID
+    WHERE t.NamaTamu LIKE '%' + @Nama + '%';
 END;
+GO
 
-CREATE TRIGGER trg_UpdateStatusKamar
+
+
+/* ============================================================
+   ========================= TRIGGER ===========================
+   ============================================================ */
+
+-- 1. Trigger otomatis mengubah status kamar menjadi "Terisi"
+--    ketika kamar dipakai dalam detail reservasi
+CREATE TRIGGER trg_UpdateKamarTerisi
 ON DetailReservasi
 AFTER INSERT
 AS
 BEGIN
     UPDATE Kamar
     SET StatusKamar = 'Terisi'
+	-- mengambil kamar yang baru ditambahkan di tabel inserted
     WHERE KamarID IN (SELECT KamarID FROM inserted);
 END;
+GO
 
-CREATE TRIGGER trg_ValidasiTotalBayar
-ON Pembayaran
-AFTER INSERT
+
+-- 2. Trigger otomatis mengubah status kamar menjadi "Tersedia"
+--    ketika data detail reservasi dihapus (check out)
+CREATE TRIGGER trg_UpdateKamarTersedia
+ON DetailReservasi
+AFTER DELETE
 AS
 BEGIN
-    UPDATE Pembayaran
-    SET StatusPembayaran = 'Lunas'
-    WHERE TotalBayar > 0;
+    UPDATE Kamar
+    SET StatusKamar = 'Tersedia'
+	-- mengambil kamar yang dihapus dari tabel deleted
+    WHERE KamarID IN (SELECT KamarID FROM deleted);
 END;
-
+GO
