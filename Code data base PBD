@@ -13,7 +13,7 @@ GO
 CREATE TABLE Tamu (
     TamuID INT IDENTITY(1,1) PRIMARY KEY,
     NamaTamu VARCHAR(100),
-    Alamat TEXT,
+    Alamat VARCHAR(255),
     NoTelepon VARCHAR(20),
     Email VARCHAR(100)
 );
