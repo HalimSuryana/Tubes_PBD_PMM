@@ -90,6 +90,16 @@ CREATE VIEW ViewPegawaiResepsionis AS
 SELECT * FROM Pegawai
 WHERE Jabatan = 'Resepsionis';
 
+-- 16 setiap pegawai
+CREATE VIEW View_DaftarPegawai
+AS
+SELECT 
+    PegawaiID,
+    NamaPegawai,
+    Jabatan,
+    NoTelepon
+FROM Pegawai;
+GO
 
 
 -- 1. Tambah data tamu
@@ -196,8 +206,13 @@ SELECT * FROM ViewPembayaranLunas;
 -- Cek layanan murah
 SELECT * FROM ViewLayananMurah;
 
--- Cek pegawai resepsionis
-SELECT * FROM ViewPegawaiResepsionis;
+-- Cek pegawai sesuai jabatan
+SELECT * FROM Pegawai
+ORDER BY Jabatan;
+
+-- Cek metodepembayaran
+SELECT * FROM MetodePembayaran;
+
 
 -- Jalankan procedure
 EXEC SpTambahTamu 
@@ -242,4 +257,3 @@ VALUES ('2025-02-01', 500000, 'Lunas', 3, 1);
 
 -- Cek status reservasi sesudah
 SELECT * FROM Reservasi WHERE ReservasiID = 3;
-
