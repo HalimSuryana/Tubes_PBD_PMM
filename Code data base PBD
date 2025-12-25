@@ -185,11 +185,27 @@ INSERT INTO Kamar (NomorKamar, StatusKamar, TipeKamarID) VALUES
 -- INSERT DATA PEGAWAI
 ------------------------------------------------------------
 INSERT INTO Pegawai (NamaPegawai, Jabatan, NoTelepon) VALUES
-('Bayu Adji', 'Resepsionis', '0821111111'),
-('Halim Suryana', 'Admin', '0822222222'),
-('Fauzan Muhammad', 'Kasir', '082333354'),
-('Nugraha Putra', 'Kasir', '0823333356'),
-('Vica Septiana', 'Kasir', '0823333333');
+('Adi Prakoso', 'Resepsionis', '0811111111'),
+('Bima Saputra', 'Resepsionis', '0811111112'),
+('Cahya Putri', 'Admin', '0811111113'),
+('Dian Ramadhan', 'Admin', '0811111114'),
+('Eko Santoso', 'Kasir', '0811111115'),
+('Fajar Nugroho', 'Kasir', '0811111116'),
+('Gilang Permana', 'Kasir', '0811111117'),
+('Hadi Wijaya', 'Housekeeping', '0811111118'),
+('Indra Setiawan', 'Housekeeping', '0811111119'),
+('Joko Pratama', 'Housekeeping', '0811111120'),
+('Kurniawan', 'Security', '0811111121'),
+('Lutfi Hakim', 'Security', '0811111122'),
+('Maya Sari', 'Marketing', '0811111123'),
+('Nina Oktaviani', 'Marketing', '0811111124'),
+('Oki Prasetyo', 'IT Support', '0811111125'),
+('Putri Ananda', 'IT Support', '0811111126'),
+('Raka Firmansyah', 'Supervisor', '0811111127'),
+('Sinta Maharani', 'Supervisor', '0811111128'),
+('Tio Ramadhan', 'Manager', '0811111129'),
+('Yoga Saputra', 'Manager', '0811111130');
+
 
 ------------------------------------------------------------
 -- INSERT DATA RESERVASI
