@@ -85,12 +85,7 @@ CREATE VIEW ViewLayananMurah AS
 SELECT * FROM Layanan
 WHERE HargaLayanan < 100000;
 
--- 15. Pegawai resepsionis
-CREATE VIEW ViewPegawaiResepsionis AS
-SELECT * FROM Pegawai
-WHERE Jabatan = 'Resepsionis';
-
--- 16 setiap pegawai
+-- 15 setiap pegawai
 CREATE VIEW View_DaftarPegawai
 AS
 SELECT 
@@ -167,6 +162,9 @@ GO
 -- Cek total tamu
 SELECT * FROM ViewTotalTamu;
 
+--Cek tipe kamar ada apa saja
+SELECT * FROM TipeKamar;
+
 -- Cek total reservasi
 SELECT * FROM ViewTotalReservasi;
 
@@ -189,7 +187,10 @@ SELECT * FROM ViewReservasiKamar;
 SELECT * FROM ViewPembayaranLengkap;
 
 -- Cek pegawai yang menangani reservasi
-SELECT * FROM ViewPegawaiReservasi;
+SELECT * FROM Reservasi;
+
+--View ini digunakan untuk menampilkan data pegawai beserta reservasi yang mereka tangani dan status reservasinya.
+SELECT * FROM ViewPegawaiReservasi
 
 -- Cek layanan tambahan per reservasi
 SELECT * FROM ViewLayananReservasi;
@@ -212,6 +213,18 @@ ORDER BY Jabatan;
 
 -- Cek metodepembayaran
 SELECT * FROM MetodePembayaran;
+
+-- Cek metodepembayaran
+SELECT * FROM DetailLayanan;
+
+-- Cek Detai Reservasi
+SELECT * FROM DetailReservasi;
+
+--Cek DetailPembayaran
+SELECT * FROM Pembayaran;
+
+-- Cek Kamar
+SELECT * FROM Kamar;
 
 
 -- Jalankan procedure
@@ -257,3 +270,24 @@ VALUES ('2025-02-01', 500000, 'Lunas', 3, 1);
 
 -- Cek status reservasi sesudah
 SELECT * FROM Reservasi WHERE ReservasiID = 3;
+
+--Cek Triger 1
+EXEC sp_helptext 'TrgKamarTerisi';
+
+SELECT KamarID, NomorKamar, StatusKamar
+FROM Kamar
+WHERE KamarID = 1;
+
+INSERT INTO DetailReservasi (ReservasiID, KamarID)
+VALUES (1, 1);
+
+SELECT KamarID, NomorKamar, StatusKamar
+FROM Kamar
+WHERE KamarID = 1;
+
+--cek triger 2
+EXEC sp_helptext 'TrgReservasiSelesai';
+SELECT ReservasiID, StatusReservasi
+FROM Reservasi
+WHERE ReservasiID = 1;
+
