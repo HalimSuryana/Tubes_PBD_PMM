@@ -1,0 +1,319 @@
+------------------------------------------------------------
+-- CREATE DATABASE
+------------------------------------------------------------
+CREATE DATABASE HotelReservasi;
+GO
+
+USE HotelReservasi;
+GO
+
+------------------------------------------------------------
+-- TABLE TAMU
+------------------------------------------------------------
+CREATE TABLE Tamu (
+    TamuID INT IDENTITY(1,1) PRIMARY KEY,
+    NamaTamu VARCHAR(100),
+    Alamat VARCHAR(255),
+    NoTelepon VARCHAR(20),
+    Email VARCHAR(100)
+);
+
+------------------------------------------------------------
+-- TABLE TIPE KAMAR
+------------------------------------------------------------
+CREATE TABLE TipeKamar (
+    TipeKamarID INT IDENTITY(1,1) PRIMARY KEY,
+    NamaTipe VARCHAR(50),
+    HargaPerMalam INT,
+    Kapasitas INT
+);
+
+------------------------------------------------------------
+-- TABLE KAMAR
+------------------------------------------------------------
+CREATE TABLE Kamar (
+    KamarID INT IDENTITY(1,1) PRIMARY KEY,
+    NomorKamar VARCHAR(10),
+    StatusKamar VARCHAR(20),
+    TipeKamarID INT,
+    FOREIGN KEY (TipeKamarID)
+        REFERENCES TipeKamar(TipeKamarID)
+);
+
+------------------------------------------------------------
+-- TABLE PEGAWAI
+------------------------------------------------------------
+CREATE TABLE Pegawai (
+    PegawaiID INT IDENTITY(1,1) PRIMARY KEY,
+    NamaPegawai VARCHAR(100),
+    Jabatan VARCHAR(50),
+    NoTelepon VARCHAR(20)
+);
+
+------------------------------------------------------------
+-- TABLE RESERVASI
+------------------------------------------------------------
+CREATE TABLE Reservasi (
+    ReservasiID INT IDENTITY(1,1) PRIMARY KEY,
+    TanggalCheckIn DATE,
+    TanggalCheckOut DATE,
+    StatusReservasi VARCHAR(20),
+    TamuID INT,
+    PegawaiID INT,
+    FOREIGN KEY (TamuID)
+        REFERENCES Tamu(TamuID),
+    FOREIGN KEY (PegawaiID)
+        REFERENCES Pegawai(PegawaiID)
+);
+
+------------------------------------------------------------
+-- TABLE DETAIL RESERVASI
+------------------------------------------------------------
+CREATE TABLE DetailReservasi (
+    DetailReservasiID INT IDENTITY(1,1) PRIMARY KEY,
+    ReservasiID INT,
+    KamarID INT,
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (KamarID)
+        REFERENCES Kamar(KamarID)
+);
+
+------------------------------------------------------------
+-- TABLE METODE PEMBAYARAN
+------------------------------------------------------------
+CREATE TABLE MetodePembayaran (
+    MetodeID INT IDENTITY(1,1) PRIMARY KEY,
+    NamaMetode VARCHAR(50)
+);
+
+------------------------------------------------------------
+-- TABLE PEMBAYARAN
+------------------------------------------------------------
+CREATE TABLE Pembayaran (
+    PembayaranID INT IDENTITY(1,1) PRIMARY KEY,
+    TanggalBayar DATE,
+    TotalBayar INT,
+    StatusPembayaran VARCHAR(20),
+    ReservasiID INT,
+    MetodeID INT,
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (MetodeID)
+        REFERENCES MetodePembayaran(MetodeID)
+);
+
+------------------------------------------------------------
+-- TABLE LAYANAN
+------------------------------------------------------------
+CREATE TABLE Layanan (
+    LayananID INT IDENTITY(1,1) PRIMARY KEY,
+    NamaLayanan VARCHAR(100),
+    HargaLayanan INT
+);
+
+------------------------------------------------------------
+-- TABLE DETAIL LAYANAN
+------------------------------------------------------------
+CREATE TABLE DetailLayanan (
+    DetailLayananID INT IDENTITY(1,1) PRIMARY KEY,
+    ReservasiID INT,
+    LayananID INT,
+    Jumlah INT,
+    FOREIGN KEY (ReservasiID)
+        REFERENCES Reservasi(ReservasiID),
+    FOREIGN KEY (LayananID)
+        REFERENCES Layanan(LayananID)
+);
+
+------------------------------------------------------------
+-- INSERT DATA TAMU
+------------------------------------------------------------
+INSERT INTO Tamu (NamaTamu, Alamat, NoTelepon, Email) VALUES
+('Ahmad Fauzi', 'Bandung', '081234567801', 'ahmad1@mail.com'),
+('Deni Firmansyah', 'Jakarta', '081234567802', 'deni2@mail.com'),
+('Dedi Pratama', 'Bekasi', '081234567803', 'dedi3@mail.com'),
+('Rizky anugrah', 'Bogor', '081234567804', 'anang@mail.com'),
+('Nugraha Putra', 'Depok', '081234567805', 'nugraha5@mail.com'),
+('Rizki Maulana', 'Bandung', '081234567806', 'rizki6@mail.com'),
+('Andi Saputra', 'Garut', '081234567807', 'andi7@mail.com'),
+('Fajar Ramadhan', 'Cimahi', '081234567808', 'fajar8@mail.com'),
+('Ilham Kurnia', 'Tasikmalaya', '081234567809', 'ilham9@mail.com'),
+('Agus Salim', 'Subang', '081234567810', 'agus10@mail.com'),
+('Budi Santoso', 'Purwakarta', '081234567811', 'budi11@mail.com'),
+('Eko Prasetyo', 'Karawang', '081234567812', 'eko12@mail.com'),
+('Hendra Wijaya', 'Cirebon', '081234567813', 'hendra13@mail.com'),
+('Indra Gunawan', 'Majalengka', '081234567814', 'indra14@mail.com'),
+('Joko Susilo', 'Solo', '081234567815', 'joko15@mail.com'),
+('Kurniawan', 'Yogyakarta', '081234567816', 'kurnia16@mail.com'),
+('Lukman Hakim', 'Semarang', '081234567817', 'lukman17@mail.com'),
+('Mochamad Arif', 'Malang', '081234567818', 'arif18@mail.com'),
+('Nanda Pradipta', 'Surabaya', '081234567819', 'nanda19@mail.com'),
+('Oki Setiawan', 'Sidoarjo', '081234567820', 'oki20@mail.com'),
+('Putra Anugrah', 'Kediri', '081234567821', 'putra21@mail.com'),
+('Qori Maulida', 'Jember', '081234567822', 'qori22@mail.com'),
+('Rama Saputra', 'Banyuwangi', '081234567823', 'rama23@mail.com'),
+('Satria Nugroho', 'Madiun', '081234567824', 'satria24@mail.com'),
+('Taufik Hidayat', 'Blitar', '081234567825', 'taufik25@mail.com'),
+('Umar Faruq', 'Pasuruan', '081234567826', 'umar26@mail.com'),
+('Vino Prakoso', 'Probolinggo', '081234567827', 'vino27@mail.com'),
+('Wahyu Setiawan', 'Lamongan', '081234567828', 'wahyu28@mail.com'),
+('Yoga Pratama', 'Gresik', '081234567829', 'yoga29@mail.com'),
+('Zaki Ramadhan', 'Mojokerto', '081234567830', 'zaki30@mail.com');
+
+
+
+------------------------------------------------------------
+-- INSERT DATA TIPE KAMAR
+------------------------------------------------------------
+INSERT INTO TipeKamar (NamaTipe, HargaPerMalam, Kapasitas) VALUES
+('Standard', 300000, 2),
+('Deluxe', 450000, 2),
+('Suite', 700000, 4);
+
+------------------------------------------------------------
+-- INSERT DATA KAMAR
+------------------------------------------------------------
+INSERT INTO Kamar (NomorKamar, StatusKamar, TipeKamarID) VALUES
+('101', 'Tersedia', 1),
+('102', 'Tersedia', 1),
+('201', 'Tersedia', 2),
+('202', 'Tersedia', 2),
+('301', 'Tersedia', 3);
+
+------------------------------------------------------------
+-- INSERT DATA PEGAWAI
+------------------------------------------------------------
+INSERT INTO Pegawai (NamaPegawai, Jabatan, NoTelepon) VALUES
+('Adi Prakoso', 'Resepsionis', '0811111111'),
+('Bima Saputra', 'Resepsionis', '0811111112'),
+('Cahya Putri', 'Admin', '0811111113'),
+('Dian Ramadhan', 'Admin', '0811111114'),
+('Eko Santoso', 'Kasir', '0811111115'),
+('Fajar Nugroho', 'Kasir', '0811111116'),
+('Gilang Permana', 'Kasir', '0811111117'),
+('Hadi Wijaya', 'Housekeeping', '0811111118'),
+('Indra Setiawan', 'Housekeeping', '0811111119'),
+('Joko Pratama', 'Housekeeping', '0811111120'),
+('Kurniawan', 'Security', '0811111121'),
+('Lutfi Hakim', 'Security', '0811111122'),
+('Maya Sari', 'Marketing', '0811111123'),
+('Nina Oktaviani', 'Marketing', '0811111124'),
+('Oki Prasetyo', 'IT Support', '0811111125'),
+('Putri Ananda', 'IT Support', '0811111126'),
+('Raka Firmansyah', 'Supervisor', '0811111127'),
+('Sinta Maharani', 'Supervisor', '0811111128'),
+('Tio Ramadhan', 'Manager', '0811111129'),
+('Yoga Saputra', 'Manager', '0811111130');
+
+
+------------------------------------------------------------
+-- INSERT DATA RESERVASI
+------------------------------------------------------------
+INSERT INTO Reservasi (TanggalCheckIn, TanggalCheckOut, StatusReservasi, TamuID, PegawaiID) VALUES
+('2025-01-01','2025-01-03','Selesai',1,1),
+('2025-01-02','2025-01-04','Selesai',2,2),
+('2025-01-03','2025-01-05','Selesai',3,3),
+('2025-01-04','2025-01-06','Selesai',4,4),
+('2025-01-05','2025-01-07','Selesai',5,5),
+('2025-01-06','2025-01-08','Selesai',6,6),
+('2025-01-07','2025-01-09','Selesai',7,7),
+('2025-01-08','2025-01-10','Selesai',8,8),
+('2025-01-09','2025-01-11','Selesai',9,9),
+('2025-01-10','2025-01-12','Selesai',10,10),
+('2025-01-11','2025-01-13','Aktif',11,11),
+('2025-01-12','2025-01-14','Aktif',12,12),
+('2025-01-13','2025-01-15','Aktif',13,13),
+('2025-01-14','2025-01-16','Aktif',14,14),
+('2025-01-15','2025-01-17','Aktif',15,15),
+('2025-01-16','2025-01-18','Aktif',16,16),
+('2025-01-17','2025-01-19','Aktif',17,17),
+('2025-01-18','2025-01-20','Aktif',18,18),
+('2025-01-19','2025-01-21','Aktif',19,19),
+('2025-01-20','2025-01-22','Aktif',20,20),
+('2025-01-21','2025-01-23','Aktif',21,1),
+('2025-01-22','2025-01-24','Aktif',22,2),
+('2025-01-23','2025-01-25','Aktif',23,3),
+('2025-01-24','2025-01-26','Aktif',24,4),
+('2025-01-25','2025-01-27','Aktif',25,5),
+('2025-01-26','2025-01-28','Aktif',26,6),
+('2025-01-27','2025-01-29','Aktif',27,7),
+('2025-01-28','2025-01-30','Aktif',28,8),
+('2025-01-29','2025-01-31','Aktif',29,9),
+('2025-01-30','2025-02-01','Aktif',30,10);
+
+
+------------------------------------------------------------
+-- INSERT DATA DETAIL RESERVASI
+------------------------------------------------------------
+INSERT INTO DetailReservasi (ReservasiID, KamarID) VALUES
+(1,1),(2,2),(3,3),(4,4),(5,5),
+(6,1),(7,2),(8,3),(9,4),(10,5),
+(11,1),(12,2),(13,3),(14,4),(15,5),
+(16,1),(17,2),(18,3),(19,4),(20,5),
+(21,1),(22,2),(23,3),(24,4),(25,5),
+(26,1),(27,2),(28,3),(29,4),(30,5);
+
+
+------------------------------------------------------------
+-- INSERT DATA METODE PEMBAYARAN
+------------------------------------------------------------
+INSERT INTO MetodePembayaran (NamaMetode) VALUES
+('Cash'),
+('Transfer'),
+('QRIS');
+
+------------------------------------------------------------
+-- INSERT DATA PEMBAYARAN
+------------------------------------------------------------
+INSERT INTO Pembayaran (TanggalBayar, TotalBayar, StatusPembayaran, ReservasiID, MetodeID) VALUES
+('2025-01-01',600000,'Lunas',1,1),
+('2025-01-02',900000,'Lunas',2,2),
+('2025-01-03',1400000,'Lunas',3,3),
+('2025-01-04',600000,'Lunas',4,1),
+('2025-01-05',900000,'Lunas',5,2),
+('2025-01-06',1400000,'Lunas',6,3),
+('2025-01-07',600000,'Lunas',7,1),
+('2025-01-08',900000,'Lunas',8,2),
+('2025-01-09',1400000,'Lunas',9,3),
+('2025-01-10',600000,'Lunas',10,1),
+('2025-01-11',900000,'Lunas',11,2),
+('2025-01-12',1400000,'Lunas',12,3),
+('2025-01-13',600000,'Lunas',13,1),
+('2025-01-14',900000,'Lunas',14,2),
+('2025-01-15',1400000,'Lunas',15,3),
+('2025-01-16',600000,'Lunas',16,1),
+('2025-01-17',900000,'Lunas',17,2),
+('2025-01-18',1400000,'Lunas',18,3),
+('2025-01-19',600000,'Lunas',19,1),
+('2025-01-20',900000,'Lunas',20,2),
+('2025-01-21',1400000,'Lunas',21,3),
+('2025-01-22',600000,'Lunas',22,1),
+('2025-01-23',900000,'Lunas',23,2),
+('2025-01-24',1400000,'Lunas',24,3),
+('2025-01-25',600000,'Lunas',25,1),
+('2025-01-26',900000,'Lunas',26,2),
+('2025-01-27',1400000,'Lunas',27,3),
+('2025-01-28',600000,'Lunas',28,1),
+('2025-01-29',900000,'Lunas',29,2),
+('2025-01-30',1400000,'Lunas',30,3);
+
+
+------------------------------------------------------------
+-- INSERT DATA LAYANAN
+------------------------------------------------------------
+INSERT INTO Layanan (NamaLayanan, HargaLayanan) VALUES
+('Laundry', 50000),
+('Room Service', 75000),
+('Spa', 150000);
+
+------------------------------------------------------------
+-- INSERT DATA DETAIL LAYANAN
+------------------------------------------------------------
+INSERT INTO DetailLayanan (ReservasiID, LayananID, Jumlah) VALUES
+(1, 1, 2),
+(2, 2, 1),
+(3, 3, 1);
+
+USE HotelReservasi;
+GO
