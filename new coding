@@ -1,0 +1,240 @@
+-- view 1 total tamu
+CREATE OR ALTER VIEW vw_TotalTamu
+AS
+SELECT COUNT(*) AS TotalTamu
+FROM Tamu;
+
+SELECT * FROM vw_TotalTamu;
+
+-- view 2 total reservasi
+CREATE OR ALTER VIEW vw_TotalReservasi
+AS
+SELECT COUNT(*) AS TotalReservasi
+FROM Reservasi;
+
+SELECT * FROM vw_TotalReservasi;
+
+-- view 3 total pendapatan
+CREATE OR ALTER VIEW vw_TotalPendapatan
+AS
+SELECT SUM(TotalBayar) AS TotalPendapatan
+FROM Pembayaran;
+
+SELECT * FROM vw_TotalPendapatan;
+
+-- view 4 rata-rata harga kamar
+CREATE OR ALTER VIEW vw_RerataHargaKamar
+AS
+SELECT AVG(HargaPerMalam) AS RerataHarga
+FROM TipeKamar;
+
+SELECT * FROM vw_RerataHargaKamar;
+
+-- view 5 jumlah reservasi per status
+CREATE OR ALTER VIEW vw_JumlahStatusReservasi
+AS
+SELECT StatusReservasi, COUNT(*) AS Jumlah
+FROM Reservasi
+GROUP BY StatusReservasi;
+
+SELECT * FROM vw_JumlahStatusReservasi;
+
+
+
+-- view 6 reservasi + tamu
+CREATE OR ALTER VIEW vw_ReservasiTamu
+AS
+SELECT t.NamaTamu, r.TanggalCheckIn, r.TanggalCheckOut
+FROM Reservasi r
+JOIN Tamu t ON r.TamuID = t.TamuID;
+
+SELECT * FROM vw_ReservasiTamu;
+
+-- view 7 reservasi + nomor kamar + tipe
+CREATE OR ALTER VIEW vw_ReservasiKamar
+AS
+SELECT k.NomorKamar, tk.NamaTipe, r.ReservasiID
+FROM Reservasi r
+JOIN DetailReservasi dr ON r.ReservasiID = dr.ReservasiID
+JOIN Kamar k ON dr.KamarID = k.KamarID
+JOIN TipeKamar tk ON k.TipeKamarID = tk.TipeKamarID;
+
+SELECT * FROM vw_ReservasiKamar;
+
+-- view 8 detail pembayaran
+CREATE OR ALTER VIEW vw_DetailPembayaran
+AS
+SELECT p.PembayaranID, t.NamaTamu, p.TotalBayar, m.NamaMetode
+FROM Pembayaran p
+JOIN Reservasi r ON p.ReservasiID = r.ReservasiID
+JOIN Tamu t ON r.TamuID = t.TamuID
+JOIN MetodePembayaran m ON p.MetodeID = m.MetodeID;
+
+SELECT * FROM vw_DetailPembayaran;
+
+-- view 9 pegawai + reservasi
+CREATE OR ALTER VIEW vw_PegawaiReservasi
+AS
+SELECT r.ReservasiID, p.NamaPegawai, r.StatusReservasi
+FROM Pegawai p
+JOIN Reservasi r ON p.PegawaiID = r.PegawaiID;
+
+SELECT * FROM vw_PegawaiReservasi;
+
+-- view 10 layanan per reservasi
+CREATE OR ALTER VIEW vw_LayananReservasi
+AS
+SELECT r.ReservasiID, l.NamaLayanan, d.Jumlah
+FROM DetailLayanan d
+JOIN Reservasi r ON d.ReservasiID = r.ReservasiID
+JOIN Layanan l ON d.LayananID = l.LayananID;
+
+SELECT * FROM vw_LayananReservasi;
+
+
+
+-- view 11 kamar tersedia
+CREATE OR ALTER VIEW vw_KamarTersedia
+AS
+SELECT t.NamaTipe, k.NomorKamar, k.StatusKamar
+FROM Kamar k
+JOIN TipeKamar t ON k.TipeKamarID = t.TipeKamarID
+WHERE StatusKamar = 'Tersedia';
+
+SELECT * FROM vw_KamarTersedia;
+
+-- view 12 reservasi aktif
+CREATE OR ALTER VIEW vw_ReservasiAktif
+AS
+SELECT t.NamaTamu, p.NamaPegawai, r.TanggalCheckIn, r.TanggalCheckOut, r.StatusReservasi
+FROM Reservasi r
+JOIN Tamu t ON r.TamuID = t.TamuID
+JOIN Pegawai p ON r.PegawaiID = p.PegawaiID
+WHERE StatusReservasi = 'Aktif';
+
+SELECT * FROM vw_ReservasiAktif;
+
+-- view 13 pembayaran lunas
+CREATE OR ALTER VIEW vw_PembayaranLunas
+AS
+SELECT p.ReservasiID, p.TanggalBayar, p.TotalBayar, m.NamaMetode, p.StatusPembayaran
+FROM Pembayaran p
+JOIN MetodePembayaran m ON p.MetodeID = m.MetodeID
+WHERE StatusPembayaran = 'Lunas';
+
+SELECT * FROM vw_PembayaranLunas;
+
+-- view 14 layanan murah
+CREATE OR ALTER VIEW vw_LayananMurah
+AS
+SELECT NamaLayanan, HargaLayanan
+FROM Layanan
+WHERE HargaLayanan < 100000;
+
+SELECT * FROM vw_LayananMurah;
+
+-- view 15 detail kasir
+CREATE OR ALTER VIEW vw_DetailKasir
+AS
+SELECT NamaPegawai, Jabatan, NoTelepon
+FROM Pegawai
+WHERE Jabatan = 'Kasir';
+
+SELECT * FROM vw_DetailKasir
+
+
+
+-- prosedur 1 tambah data layanan
+CREATE OR ALTER PROCEDURE sp_TambahLayanan
+@ReservasiID INT,
+@LayananID INT,
+@Jumlah INT
+AS
+BEGIN
+    INSERT INTO DetailLayanan VALUES (@ReservasiID, @LayananID, @Jumlah);
+END;
+
+EXEC sp_TambahLayanan '1', '1', '';
+
+SELECT * FROM DetailLayanan;
+SELECT * FROM vw_LayananReservasi;
+
+-- prosedur 2 delete data layanan
+CREATE OR ALTER PROCEDURE sp_DeleteLayanan
+@ReservasiID INT,
+@LayananID INT,
+@Jumlah INT
+AS
+BEGIN
+    DELETE FROM DetailLayanan
+    WHERE
+    ReservasiID = @ReservasiID AND
+    LayananID = @LayananID AND
+    Jumlah = @Jumlah
+END;
+
+EXEC sp_DeleteLayanan '1', '1', '';
+
+SELECT * FROM DetailLayanan;
+SELECT * FROM vw_LayananReservasi;
+
+-- prosedur 3 update layanan
+CREATE OR ALTER PROCEDURE sp_UpdateLayanan
+@DetailLayananID INT,
+@ReservasiID INT,
+@LayananID INT,
+@Jumlah INT
+AS
+BEGIN
+    UPDATE DetailLayanan
+    SET
+    ReservasiID = @ReservasiID,
+    LayananID = @LayananID,
+    Jumlah = @Jumlah
+    WHERE DetailLayananID = @DetailLayananID
+END;
+
+EXEC sp_UpdateLayanan '5', '1', '2', '2';
+
+SELECT * FROM DetailLayanan;
+SELECT * FROM vw_LayananReservasi;
+
+
+
+-- trigger 1 jika data jumlah di "sp_TambahLayanan" kosong
+CREATE OR ALTER TRIGGER trg_CekDataTambahLayanan
+ON DetailLayanan
+AFTER INSERT
+AS
+BEGIN
+	IF EXISTS (
+	SELECT * FROM inserted
+	WHERE
+    Jumlah = 0
+	)
+	BEGIN
+		RAISERROR ('masukkan jumlah', 16, 1)
+		ROLLBACK;
+	END;
+END;
+
+EXEC sp_TambahLayanan '1', '1', '';
+
+-- Trigger 2 jika data jumlah di "sp_UpdateLayanan" kosong
+CREATE TRIGGER trg_CekDataUpdateLayanan
+ON DetailLayanan
+AFTER UPDATE
+AS
+BEGIN
+	IF EXISTS (
+	SELECT * FROM inserted
+	WHERE
+    Jumlah = 0
+	)
+	BEGIN
+		RAISERROR ('masukkan jumlah', 16, 1)
+		ROLLBACK;
+	END;
+END;
+
+EXEC sp_UpdateLayanan '1', '1', '1', '';
